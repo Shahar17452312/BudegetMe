@@ -24,7 +24,18 @@ const updateUser=(req,res)=>{
     
 }
 
-const deleteUser=(req,res)=>{
+const deleteUser=async(req,res)=>{
+    const {id}=req.params;
+    try{
+        await db.query("DELETE FROM expenses WHERE id=$1",[id]);
+        await db.query("DELETE FROM users WHERE id=$1",[id]);
+        return res.status(200).send(JSON.stringify({message:"user has been deleted"}));
+
+    }
+    catch(error){
+        console.log(error.message);
+        return res.status(409).send(JSON.stringify({message:"error"}));
+    }
     
 }
 
