@@ -1,0 +1,107 @@
+/* הגדרת אפקט גלים לרקע */
+@keyframes wave-animation {
+  0% {
+    background-color: #cce7ff; /* כחול בהיר */
+  }
+  50% {
+    background-color: #ffffff; /* לבן */
+  }
+  100% {
+    background-color: #cce7ff; /* כחול בהיר */
+  }
+}
+
+/* אנימציה של גלים לרקע */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  animation: wave-animation 10s infinite alternate; /* שינוי צבע בגלים */
+  background-color: #cce7ff; /* הצבע ההתחלתי */
+}
+
+/* הגדרות לעיצוב ה-root */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f4f4f9; /* רקע בהיר יותר לעמוד */
+  border-radius: 8px;
+  overflow: hidden; /* למנוע גלישה */
+}
+
+/* עיצוב לוגו עם צבע אחיד */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+  margin-bottom: 2rem;
+  background-color: #cce7ff; /* צבע אחיד לכל האובייקטים */
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+/* אנימציה של סיבוב הלוגו */
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* עיצוב כרטיסים עם צבע אחיד */
+.card {
+  padding: 2em;
+  background-color: #cce7ff; /* צבע אחיד לכרטיסים */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 300ms;
+  margin-bottom: 2rem; /* רווח בין כרטיסים */
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* עיצוב כפתור 'קרא את המסמכים' */
+.read-the-docs {
+  color: #888;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: color 300ms;
+}
+
+.read-the-docs:hover {
+  color: #646cff;
+}
+
+/* כל האלמנטים המצוינים יתנהגו עם צבע אחיד */
+button, .card, .logo, .read-the-docs {
+  background-color: #cce7ff; /* צבע אחיד */
+  color: #333; /* צבע טקסט כהה */
+  border: 2px solid #cce7ff; /* מסגרת אחידה לכל האובייקטים */
+  border-radius: 8px;
+  padding: 1em;
+}
+
+button:hover, .read-the-docs:hover, .card:hover {
+  background-color: #ffffff; /* שינוי צבע כאשר מרחפים עם העכבר */
+  border-color: #646cff; /* גבול כחול כהה */
+}
