@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from "./routes/authRoutes.js";
-import expensesRoutes from "./routes/budgetRoutes.js";
+import expensesRoutes from "./routes/expensesRoutes.js";
 import db from "./config/database.js"
 import userRoutes from "./routes/userRoutes.js";
 
