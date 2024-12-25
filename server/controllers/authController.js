@@ -1,5 +1,5 @@
 import bycrypt from "bcrypt";
-import db from "../server.js";
+import {db} from "../server.js";
 import dotenv from 'dotenv';
 
 
@@ -10,7 +10,6 @@ const userRegister= async(req,res)=>{
     if(!name||!email||!password||!budget||!dateOfCreate){
         return res.status(400).send(JSON.stringify({message:"not all the details included"}));
     }
-
         const result= await db.query("SELECT * FROM users WHERE email=$1",[email]);
         if(result.rows.length>0){
             return res.status(409).send(JSON.stringify({message:"email is already exists"}));

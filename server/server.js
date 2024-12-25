@@ -36,4 +36,4 @@ app.listen(port,async () => {
   }
 });
 
-export default db;
+export {db,app};

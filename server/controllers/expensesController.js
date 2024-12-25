@@ -1,4 +1,4 @@
-import db from "../server.js";
+import {db} from "../server.js";
 
 
 const getexpenses=async(req,res)=>{
