@@ -6,13 +6,13 @@ const getUser=async(req,res)=>{
         console.log(id);
         const result=await db.query("SELECT name,email,budget FROM users WHERE id=$1",[id]);
         if(result.rows.length===0){
-            return res.status(404).send(JSON.stringify({message:"not found"}));
+            return res.status(404).json({message:"not found"});
         }
-        return res.status(200).send(JSON.stringify({userDetails:result.rows[0]}));
+        return res.status(200).json({userDetails:result.rows[0]});
     }
     catch(error){
         console.log(error.message);
-        return res.status(409).send(JSON.stringify({message:"error"}));
+        return res.status(409).json({message:"error"});
 
     }
    
@@ -23,13 +23,14 @@ const updateUser=async(req,res)=>{
 
     const {name,email,password,budget,created_at}=req.body;
     const {id}=req.params;
+    if(!id){
+        return res.status(400).json({message:"Error"});
+    }
     try{
         const result=await db.query("SELECT * FROM users WHERE id=$1",[id]);
         const currentUser=result.rows[0];
         var toUpdate={};
-        if(!id){
-            return res.status(409).send(JSON.stringify({message:"Error"}));
-        }
+        
         if (name&&name!==currentUser.name) toUpdate.name = name;
         if (email&&email!==currentUser.email) toUpdate.email = email;
         if (password){
@@ -57,7 +58,7 @@ const updateUser=async(req,res)=>{
 
     
         if(values.length===0){
-            return res.status(409).send(JSON.stringify({message:"There is no data to change"}));
+            return res.status(200).json({message:"There is no data to change"});
         }
     
     
@@ -69,16 +70,16 @@ const updateUser=async(req,res)=>{
     
         try{
             await db.query(query,values);
-            return res.status(200).send(JSON.stringify({message:"user updated"}));
+            return res.status(200).json({message:"user updated"});
         }
         catch(error){
             console.log(error.message);
-            return res.status(409).send(JSON.stringify({message:"Error to update user"}));
+            return res.status(500).json({message:"Error to update user"});
         }
     }
     catch(error){
         console.log(error.message);
-        return res.status(409).send(JSON.stringify({message:"Error to update user"}));
+        return res.status(500).json({message:"Error to update user"});
 
     }
 
@@ -93,12 +94,11 @@ const deleteUser=async(req,res)=>{
     try{
         await db.query("DELETE FROM expenses WHERE id=$1",[id]);
         await db.query("DELETE FROM users WHERE id=$1",[id]);
-        return res.status(200).send(JSON.stringify({message:"user has been deleted"}));
-
+        return res.status(200).json({message:"user has been deleted"});
     }
     catch(error){
         console.log(error.message);
-        return res.status(409).send(JSON.stringify({message:"error"}));
+        return res.status(409).json({message:"error"});
     }
     
 }
