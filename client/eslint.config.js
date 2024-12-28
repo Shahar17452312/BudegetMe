@@ -33,6 +33,8 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      // הוספתי את ההגדרה להשבתת בדיקת prop-types
+      'react/prop-types': 'off', // זה ישבית את הבדיקה של prop-types
     },
   },
 ]

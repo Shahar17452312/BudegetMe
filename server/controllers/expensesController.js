@@ -1,20 +1,31 @@
 import {db} from "../server.js";
+import jwt from "jsonwebtoken";
+import {jwtConfig} from "../config/jwt.js";
 
 
 const getexpenses=async(req,res)=>{
-    const {id}=req.params
-
+    console.log(req.headers);
+    const token = req.headers['authorization'].split(' ')[1];
     try{
-        const result=await db.query("SELECT * FROM expenses WHERE user_id=$1",[id]);
-        if(result.rows.length<=0){
-            return res.status(404).json({message:"no expenses yet"});
+        const decode=jwt.verify(token,jwtConfig.jwtSecret);
+        const {id}=req.params
+        console.log(decode);
+        try{
+            const result=await db.query("SELECT * FROM expenses WHERE user_id=$1",[id]);
+            if(result.rows.length<=0){
+                return res.status(404).json({message:"no expenses yet"});
+            }
+            return res.status(200).json({expenses:result.rows});
         }
-        return res.status(200).json({expenses:result.rows});
+    
+        catch(err){
+            return res.status(409).json({message:"error accured"});
+    
+        }
     }
-
-    catch(err){
-        return res.status(409).json({message:"error accured"});
-
+    catch(error){
+        console.error("error",error.message);
+        return res.status(400).json({message:"Invalid Token"});
     }
 };
 

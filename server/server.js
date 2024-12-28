@@ -6,13 +6,14 @@ import db from "./config/database.js"
 import userRoutes from "./routes/userRoutes.js";
 
 
+
 async function dbConnecting(){
   await db.connect();
   console.log("DB is connected")
 }
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.SERVER_PORT;
 
 app.use(cors({ origin: 'http://localhost:5173' }));
 
@@ -35,5 +36,7 @@ app.listen(port,async () => {
     process.exit(1);
   }
 });
+
+
 
 export {db,app};

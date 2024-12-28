@@ -1,0 +1,78 @@
+/* עיצוב דף העריכה */
+.edit-profile-container {
+  background-color: #f4f7fc;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: 100vh;
+}
+
+h1 {
+  color: #34495e;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.profile-form {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 1rem;
+  color: #34495e;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.form-group input:focus {
+  border-color: #2980b9;
+  outline: none;
+}
+
+.submit-btn {
+  padding: 12px;
+  background-color: #2980b9;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #1f6a94;
+}
+
+/* החבאת החיצים בשדה מספר */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+input[type="number"] {
+-moz-appearance: textfield; /* להחביא את החיצים ב-Firefox */
+}

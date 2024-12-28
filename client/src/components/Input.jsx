@@ -1,9 +1,16 @@
-import React from 'react';
-import TextField from "@mui/material/TextField"
+import '../assets/styles/Input.css'; 
+
 
 function Input(props) {
-  return <TextField onChange={props.onChange} id="outlined-basic" label={props.l} variant="outlined" name={props.name} />;
-
+  return (
+    <input
+      type={props.type} 
+      placeholder={props.placeholder} 
+      value={props.value} 
+      onChange={props.onChange} 
+      autoComplete={props.autocomplete}
+    />
+  );
 }
 
 export default Input;
