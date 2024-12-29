@@ -24,19 +24,24 @@ function Login() {
         name: name,
         password: password
       });
-      const token=result.data;
-      console.log(token);
+      const accesstoken=result.data.accesstoken;
+      const refreshToken=result.data.refreshToken;
+      console.log(result.data);
   
       if (result.status === 200) {
-        localStorage.setItem('token', token);
-        navigate("/Home");
+        console.log(result.status);
+        localStorage.setItem('accesstoken', accesstoken);
+        localStorage.setItem('refreshtoken', refreshToken);
+        console.log(result.data);
+        localStorage.setItem('user_id',result.data.user.id);
+        localStorage.setItem('user_name',result.data.user.name);
+        navigate("/home");
+        
+
+
       } else {
         setHidden(false);
       }
-
-
-      var a=localStorage.getItem("token");
-      console.log(a);
     } catch (error) {
       console.error("Login error:", error);
         setHidden(false);

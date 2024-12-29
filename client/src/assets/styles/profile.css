@@ -1,5 +1,5 @@
-/* עיצוב דף העריכה */
-.edit-profile-container {
+/* עיצוב מיכל הפרופיל */
+.profile-container {
   background-color: #f4f7fc;
   padding: 40px;
   display: flex;
@@ -7,72 +7,51 @@
   align-items: center;
   gap: 20px;
   height: 100vh;
+  font-family: 'Arial', sans-serif;
 }
 
-h1 {
-  color: #34495e;
+/* עיצוב כותרת הפרופיל */
+.profile-header {
+  color: #2c3e50;
   font-size: 2.5rem;
   font-weight: bold;
+  margin-bottom: 20px;
 }
 
-.profile-form {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* עיצוב רשימת הפרופיל */
+.profile-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   width: 100%;
   max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-size: 1rem;
+/* עיצוב פריטים ברשימה */
+.profile-list-item {
+  font-size: 1.2rem;
   color: #34495e;
-  margin-bottom: 8px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  justify-content: space-between;
 }
 
-.form-group input {
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  width: 100%;
+/* הסרת גבול מהפריט האחרון ברשימה */
+.profile-list-item:last-child {
+  border-bottom: none;
 }
 
-.form-group input:focus {
-  border-color: #2980b9;
-  outline: none;
+/* עיצוב מפתחות ברשימה */
+.profile-list-key {
+  font-weight: bold;
+  color: #2980b9;
 }
 
-.submit-btn {
-  padding: 12px;
-  background-color: #2980b9;
-  color: white;
-  font-size: 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.submit-btn:hover {
-  background-color: #1f6a94;
-}
-
-/* החבאת החיצים בשדה מספר */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
--webkit-appearance: none;
-margin: 0;
-}
-
-input[type="number"] {
--moz-appearance: textfield; /* להחביא את החיצים ב-Firefox */
+/* עיצוב ערכים ברשימה */
+.profile-list-value {
+  color: #34495e;
 }

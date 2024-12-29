@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import '../assets/styles/profile.css'; // קובץ עיצוב
-import NavBar from '../components/Navbar';
 import axios from 'axios';
+import HamburgerMenu from '../components/HamburgerMenu.jsx';
+
 
 function EditProfile() {
   const [name, setName] = useState('');
@@ -47,7 +48,7 @@ function EditProfile() {
 
   return (
     <div className="edit-profile-container">
-      <NavBar />
+      <HamburgerMenu />
       <h1>Edit Profile</h1>
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="form-group">

@@ -4,12 +4,17 @@ import jwt from "jsonwebtoken";
 import {jwtConfig} from "../config/jwt.js"
 const getUser=async(req,res)=>{
     const token = req.headers['authorization'].split(' ')[1];
+    console.log("in here");
     try{
-            const decoded=jwt.verify(token, jwtConfig.jwtSecret);
+            jwt.verify(token, jwtConfig.jwtSecret);
             const {id}=req.params;
+            console.log(id);
         try{
             const usersResult=await db.query("SELECT name,email,date_of_creation FROM users WHERE id=$1",[id]);
             const budgetResult=await db.query("SELECT amount FROM budget WHERE user_id=$1",[id]);
+            console.log(usersResult.rows[0]);
+            console.log(budgetResult.rows[0]);
+
             if(usersResult.rows.length===0||budgetResult.rows.length===0){
                 return res.status(404).json({message:"not found"});
             }

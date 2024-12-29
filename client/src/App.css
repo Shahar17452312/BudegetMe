@@ -11,13 +11,7 @@
   }
 }
 
-/* אנימציה של גלים לרקע */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  animation: wave-animation 10s infinite alternate; /* שינוי צבע בגלים */
-  background-color: #cce7ff; /* הצבע ההתחלתי */
-}
+
 
 /* הגדרות לעיצוב ה-root */
 #root {
@@ -33,6 +27,7 @@ body {
 /* עיצוב לוגו עם צבע אחיד */
 .logo {
   height: 6em;
+  width: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;

@@ -19,8 +19,10 @@ function HamburgerMenu() {
         <div className="side-menu">
           <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/other">Other Page</a></li>
-            <li><a href="/settings">Settings</a></li>
+            <li><a href="/profile">profile</a></li>
+            <li><a href="/edit-profile">edit profile</a></li>
+            <li><a href="/about">about</a></li>
+
           </ul>
         </div>
       )}

@@ -35,13 +35,19 @@ const userRegister= async(req,res)=>{
                             res.status(500).json({mesaage:"error"});
                         }
                        
-                        const token = jwt.sign({ id: user.id, username: user.name }
+                        const accessToken = jwt.sign({ id: user.id, username: user.name }
                             , jwtConfig.jwtSecret
-                            , { expiresIn: jwtConfig.jwtExpiresIn }
+                            , { expiresIn: jwtConfig.jwtAccessTokenExpiresIn }
+                        );
+
+                        const refreshToken = jwt.sign({ id: user.id, username: user.name }
+                            , jwtConfig.jwtSecret
+                            , { expiresIn: jwtConfig.jwtAccessTokenExpiresIn }
                         );
 
                         return res.status(201).json({
-                            token:token,
+                            accessToken:accessToken,
+                            refreshToken:refreshToken,
                             user:{
                                 id:user.id,
 
@@ -82,8 +88,21 @@ const userLogin=async(req,res)=>{
         try{
             const result=await bycrypt.compare(password,hashedStoredPassword);
             if(result){
-                const token = jwt.sign({ id: storedUser.rows[0].id, name: storedUser.rows[0].name }, jwtConfig.jwtSecret, { expiresIn: jwtConfig.jwtExpiresIn });
-                res.status(200).json({ token });
+                const accesstoken = jwt.sign({ id: storedUser.rows[0].id, name: storedUser.rows[0].name }, jwtConfig.jwtSecret, { expiresIn: jwtConfig.jwtAccessTokenExpiresIn });
+                const refreshToken = jwt.sign({ id: storedUser.rows[0].id, username: storedUser.rows[0].name }
+                    , jwtConfig.jwtSecret
+                    , { expiresIn: jwtConfig.jwtRefreshTokenExpiresIn }
+                );
+
+                res.status(200).json({ 
+                    accesstoken:accesstoken,
+                    refreshToken:refreshToken,
+                    user:{
+                        id:storedUser.rows[0].id,
+                        name:storedUser.rows[0].name
+
+                    }
+                 });
             }
             else{
                 return res.status(401).json({message:"Login Failed"});

@@ -4,7 +4,8 @@ dotenv.config();
 
 var jwtConfig={
     jwtSecret: process.env.JWT_SECRET || 'defaultSecretKey',
-    jwtExpiresIn: '1h'
+    jwtAccessTokenExpiresIn: '1h',
+    jwtRefreshTokenExpiresIn: '7d'
 }
 
 export {jwtConfig};

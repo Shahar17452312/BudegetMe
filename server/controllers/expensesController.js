@@ -31,29 +31,37 @@ const getexpenses=async(req,res)=>{
 
 
 const addExpense=async(req,res)=>{
-    console.log(req.body);
-    const {user_id,amount,descreption,category,date}=req.body;
-    const expensDetailsToUpdate=Object.values(req.body);
-    if(expensDetailsToUpdate.length<5)
-        return res.status(409).json({message:"at least one of the details is missing"});
-    expensDetailsToUpdate.forEach(element => {
-        if(!element){
-            return res.status(409).json({message:"at least one of the details is missing"});
-        }
-    });
-    const expensDetails=[user_id,amount,descreption,category,date];
-
-
     try{
-        await db.query("INSERT INTO expenses (user_id,amount,description,category,date) VALUES ($1,$2,$3,$4,$5)",expensDetails);
-        return res.status(202).json({message:"Expense has been saved"});
+            console.log(req.body);
+        const token = req.headers['authorization'].split(' ')[1];
+        jwt.verify(token,jwtConfig.jwtSecret);
+        const {user_id,amount,description,category,date}=req.body;
+        const expensDetailsToUpdate=Object.values(req.body);
+        if(expensDetailsToUpdate.length<5)
+            return res.status(409).json({message:"at least one of the details is missing"});
+        expensDetailsToUpdate.forEach(element => {
+            if(!element){
+                return res.status(409).json({message:"at least one of the details is missing"});
+            }
+        });
+        const expensDetails=[user_id,amount,description,category,date];
 
+
+        try{
+            await db.query("INSERT INTO expenses (user_id,amount,description,category,date) VALUES ($1,$2,$3,$4,$5)",expensDetails);
+            return res.status(202).json({message:"Expense has been saved"});
+
+        }
+        catch(error){
+            console.log(error.message);
+            return res.status(409).json({message:"Error to save expense"});
+
+        }
     }
     catch(error){
         console.log(error.message);
-        return res.status(409).json({message:"Error to save expense"});
-
     }
+    
 
     
 

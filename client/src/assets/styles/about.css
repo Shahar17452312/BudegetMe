@@ -1,54 +1,75 @@
-/* About.css */
-
 /* עיצוב דף "About" */
 .about-container {
-    background-color: #f4f7fc;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    height: 100vh;
-  }
-  
+  background-color: #f5f7fa;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: 100vh;
+  font-family: 'Arial', sans-serif;
+}
+
+h1 {
+  color: #2c3e50;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+p {
+  color: #7f8c8d;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  text-align: center;
+  width: 80%;
+  max-width: 800px;
+}
+
+.about-info {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 800px;
+}
+
+.about-info h2 {
+  color: #2980b9;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.about-info p {
+  color: #34495e;
+  font-size: 1.2rem;
+}
+
+strong {
+  color: #2980b9;
+}
+
+/* התאמות למסכים קטנים */
+@media (max-width: 768px) {
   h1 {
-    color: #34495e;
     font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
   }
-  
+
   p {
-    color: #7f8c8d;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    text-align: center;
-    width: 80%;
-    max-width: 800px;
+    font-size: 1rem;
   }
-  
+
   .about-info {
-    background-color: #ffffff;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 800px;
-    margin-top: 20px;
   }
-  
+
   .about-info h2 {
-    color: #2980b9;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
   }
-  
+
   .about-info p {
-    color: #34495e;
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
-  
-  strong {
-    color: #2980b9;
-  }
-  
+}

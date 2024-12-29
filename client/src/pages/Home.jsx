@@ -1,132 +1,192 @@
-import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-import { useTable } from "react-table";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+import { useEffect, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import HamburgerMenu from '../components/HamburgerMenu';
+import '../assets/styles/home.css';
+import axios from 'axios';
 
 function Home() {
-  const [userData, setUserData] = useState({});
+  // Example data for expenses
+
+
+  const data = [
+    { month: 'January', expenses: 300 },
+    { month: 'February', expenses: 400 },
+    { month: 'March', expenses: 200 },
+    { month: 'April', expenses: 500 },
+    { month: 'May', expenses: 450 },
+    { month: 'June', expenses: 600 },
+    { month: 'July', expenses: 550 },
+  ];
+  const id=localStorage.getItem("user_id");
+  const token=localStorage.getItem("accesstoken");
+  const name=localStorage.getItem("user_name");
+  
   const [expenses, setExpenses] = useState([]);
-  const [newExpense, setNewExpense] = useState({ amount: "", description: "", category: "", currentBudget: "" });
+
+  // State for form inputs
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [date, setDate] = useState('');
+  const [budget,setBudget]=useState(0);
+
 
   useEffect(() => {
-    setUserData({
-      name: "Shahar",
-      email: "shahar@example.com",
-      budget: 5000,
-    });
+    const fetchData = async () => {
+      try {
+        // בקשה ראשונה לקבלת התקציב
+        const budgetResponse = await axios.get(`http://localhost:8080/user/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-    setExpenses([
-      { amount: 200, description: "Gas", category: "Transport", currentBudget: 1000 },
-      { amount: 300, description: "Food", category: "Groceries", currentBudget: 1000 },
-      { amount: 150, description: "Entertainment", category: "Leisure", currentBudget: 1000 },
-    ]);
-  }, []);
+        // בקשה שנייה לקבלת ההוצאות
+        const expensesResponse = await axios.get(`http://localhost:8080/expenses/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-  const chartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-    datasets: [
-      {
-        label: "Expenses",
-        data: [200, 300, 250, 400, 350, 500, 600],
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        fill: true,
-      },
-    ],
-  };
+        setBudget(budgetResponse.data.amount);
 
-  const columns = React.useMemo(
-    () => [
-      { Header: "Amount", accessor: "amount" },
-      { Header: "Description", accessor: "description" },
-      { Header: "Category", accessor: "category" },
-      { Header: "Current Budget", accessor: "currentBudget" },
-    ],
-    []
-  );
+        var amount=budgetResponse.data.amount;
+        // עדכון הוצאות לאחר חיתוך התאריך
+        const expensesData = expensesResponse.data.expenses.map(element => {
+          console.log(element.amount);
+          amount-=element.amount;
+          element.date = element.date.slice(0, 10); // חיתוך התאריך
+          return element;
+        });
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
-    columns,
-    data: expenses,
-  });
+        setExpenses(expensesData);
+        setBudget(amount);
 
+      } catch (error) {
+        console.log("error");
+        console.log(error.message);
+      }
+    };
+
+    fetchData();
+  },[]); // תשתנה כאשר id או token משתנים
+
+
+
+
+
+  // Handler for adding a new expense
   const addExpense = () => {
-    if (newExpense.amount && newExpense.description && newExpense.category && newExpense.currentBudget) {
-      setExpenses([...expenses, newExpense]);
-      setNewExpense({ amount: "", description: "", category: "", currentBudget: "" });
-    } else {
-      alert("Please fill all the fields");
+    if(!id||!amount||!description||!category||!date){
+      alert("not all details entered");
+      return;
     }
+    try{
+      axios.post("http://localhost:8080/expenses/addExpense/"+id,{
+        user_id:id,
+        amount:amount,
+        description:description,
+        category:category,
+        date:date
+      },{
+        headers:{
+          'Authorization': "Bearer " + token  // הוספת הטוקן בהצלחה
+
+        }
+      }).then(()=>{
+          setExpenses([
+            ...expenses,
+            { amount: parseFloat(amount), description, category, date },
+          ]);
+          setAmount('');
+          setDescription('');
+          setCategory('');
+          setDate('');
+          setBudget(budget-amount);
+        
+      });
+    }
+    catch(error){
+      console.log(error.message);
+    }
+    
+
+
+
+   
   };
 
   return (
     <div className="home-container">
-      <div className="user-info">
-        <h1>Hello, {userData.name}</h1>
-        <p>Email: {userData.email}</p>
-        <p>Budget: {userData.budget}</p>
+      <HamburgerMenu />
+      <div className="greeting-container">
+        <h1 className="greeting-title">Hello, {name}!</h1>
+        <p className="site-description">Welcome to our site! Here you can find useful information and perform many actions.</p>
       </div>
 
-      <div className="chart-container">
+      {/* Graph Section */}
+      <div className="graph-container">
         <h2>Monthly Expenses</h2>
-        <Line data={chartData} />
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="expenses" stroke="#4CAF50" fill="#4CAF50" />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
+      {/* Expense Table Section */}
       <div className="table-container">
-        <h2>Expenses Table</h2>
-        <table {...getTableProps()}>
+        <h2>Expenses</h2>
+        <table className="expense-table">
           <thead>
-            {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                {headerGroup.headers.map(column => (
-                  <th {...column.getHeaderProps()} key={column.id}>
-                    {column.render("Header")}
-                  </th>
-                ))}
+            <tr>
+              <th>Amount</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {expenses.map((expense, index) => (
+              <tr key={index}>
+                <td>{expense.amount} ₪</td>
+                <td>{expense.description}</td>
+                <td>{expense.category}</td>
+                <td>{expense.date}</td>
               </tr>
             ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map(row => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()} key={row.id}>
-                  {row.cells.map(cell => (
-                    <td {...cell.getCellProps()} key={cell.column.id}>{cell.render("Cell")}</td>
-                  ))}
-                </tr>
-              );
-            })}
           </tbody>
         </table>
 
-        <div className="add-expense-form">
-          <h3>Add New Expense</h3>
+        <h1>your current budget is {budget}</h1>
+        {budget>0?<h2>great job</h2>:<h2>you need to save money</h2>}
+        {/* Form for adding new expense */}
+        <div className="expense-form">
+          <h3>Add a New Expense</h3>
           <input
             type="number"
             placeholder="Amount"
-            value={newExpense.amount}
-            onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
           />
           <input
             type="text"
             placeholder="Description"
-            value={newExpense.description}
-            onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
           <input
             type="text"
             placeholder="Category"
-            value={newExpense.category}
-            onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
           />
           <input
-            type="number"
-            placeholder="Current Budget"
-            value={newExpense.currentBudget}
-            onChange={(e) => setNewExpense({ ...newExpense, currentBudget: e.target.value })}
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+             lang="en"
           />
           <button onClick={addExpense}>Add Expense</button>
         </div>
