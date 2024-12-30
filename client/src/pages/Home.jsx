@@ -5,111 +5,136 @@ import '../assets/styles/home.css';
 import axios from 'axios';
 
 function Home() {
-  // Example data for expenses
+  const id = localStorage.getItem("user_id");
+  const token = localStorage.getItem("accesstoken");
+  const name = localStorage.getItem("user_name");
 
-
-  const data = [
-    { month: 'January', expenses: 300 },
-    { month: 'February', expenses: 400 },
-    { month: 'March', expenses: 200 },
-    { month: 'April', expenses: 500 },
-    { month: 'May', expenses: 450 },
-    { month: 'June', expenses: 600 },
-    { month: 'July', expenses: 550 },
-  ];
-  const id=localStorage.getItem("user_id");
-  const token=localStorage.getItem("accesstoken");
-  const name=localStorage.getItem("user_name");
-  
   const [expenses, setExpenses] = useState([]);
-
-  // State for form inputs
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
-  const [budget,setBudget]=useState(0);
-
+  const [budget, setBudget] = useState(0);
+  const [chartData, setChartData] = useState([]);
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // בקשה ראשונה לקבלת התקציב
         const budgetResponse = await axios.get(`http://localhost:8080/user/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-
-        // בקשה שנייה לקבלת ההוצאות
-        const expensesResponse = await axios.get(`http://localhost:8080/expenses/${id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
         setBudget(budgetResponse.data.amount);
+        try{
+          const expensesResponse = await axios.get(`http://localhost:8080/expenses/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+  
+          console.log(budgetResponse.data);
+  
+          let remainingBudget = budgetResponse.data.amount;
+          const updatedChartData = [];
+  
+          const expensesData = expensesResponse.data.expenses.map(element => {
+            console.log(typeof(element.date));
+            remainingBudget -= element.amount;
+            element.date = element.date.slice(0, 10);
+  
+            const month = new Date(element.date).toLocaleString('en-US', { month: 'long' });
+            const existingEntry = updatedChartData.find(entry => entry.month === month);
+            
+            if (existingEntry) {
+              existingEntry.expenses += element.amount;
+            } else {
+              updatedChartData.push({ month, expenses: element.amount });
+            }
+  
+            return element;
+          });
+  
+          expensesData.sort((a,b)=>{
+            var dateOfA = new Date(a.date); // החודש ב-JavaScript מתחיל מ-0 (ינואר הוא 0)
+            var dateOfB=new Date(b.date);
+  
+            return dateOfA-dateOfB;
+  
+  
+          });
+  
+          // מיין את החודשים בסדר כרונולוגי
+          const monthOrder = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+          updatedChartData.sort((a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month));
+  
+  
+          setChartData(updatedChartData);
+          setExpenses(expensesData);
+          setBudget(remainingBudget);
+        }
+        catch(error){
+          console.log(error.message);
+        }
 
-        var amount=budgetResponse.data.amount;
-        // עדכון הוצאות לאחר חיתוך התאריך
-        const expensesData = expensesResponse.data.expenses.map(element => {
-          console.log(element.amount);
-          amount-=element.amount;
-          element.date = element.date.slice(0, 10); // חיתוך התאריך
-          return element;
-        });
-
-        setExpenses(expensesData);
-        setBudget(amount);
-
-      } catch (error) {
-        console.log("error");
-        console.log(error.message);
+      } 
+      
+      
+      catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  },[]); // תשתנה כאשר id או token משתנים
+  }, [update]);
 
-
-
-
-
-  // Handler for adding a new expense
-  const addExpense = () => {
-    if(!id||!amount||!description||!category||!date){
-      alert("not all details entered");
+  const addExpense = async () => {
+    // בודק אם יש נתונים חסרים
+    if (!id || !amount || !description || !category || !date) {
+      alert("Please fill in all fields.");
       return;
     }
-    try{
-      axios.post("http://localhost:8080/expenses/addExpense/"+id,{
-        user_id:id,
-        amount:amount,
-        description:description,
-        category:category,
-        date:date
-      },{
-        headers:{
-          'Authorization': "Bearer " + token  // הוספת הטוקן בהצלחה
 
+    try {
+      // שולח את ההוצאה ל-API לעדכון
+      await axios.post(`http://localhost:8080/expenses/addExpense/${id}`, {
+        user_id: id,
+        amount: parseFloat(amount),
+        description,
+        category,
+        date
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      }).then(()=>{
-          setExpenses([
-            ...expenses,
-            { amount: parseFloat(amount), description, category, date },
-          ]);
-          setAmount('');
-          setDescription('');
-          setCategory('');
-          setDate('');
-          setBudget(budget-amount);
-        
       });
-    }
-    catch(error){
-      console.log(error.message);
-    }
-    
 
-
-
+      // עדכון נתוני ההוצאות בטבלה ובגרף
+      const newExpense = { amount: parseFloat(amount), description, category, date };
+      const expensesToSort=[...expenses,newExpense];
    
+      setExpenses(expensesToSort);
+
+      const month = new Date(date).toLocaleString('en-US', { month: 'long' });
+      const existingEntry = chartData.find(entry => entry.month === month);
+      if (existingEntry) {
+        existingEntry.expenses += parseFloat(amount);
+      } else {
+        setChartData([...chartData, { month, expenses: parseFloat(amount) }]);
+      }
+
+      // עדכון התקציב הנותר
+      setBudget(budget - parseFloat(amount));
+      
+      // איפוס השדות
+      setAmount('');
+      setDescription('');
+      setCategory('');
+      setDate('');
+
+      // עדכון הסטייט של הוצאות
+      setUpdate(!update);
+
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
   };
 
   return (
@@ -120,11 +145,10 @@ function Home() {
         <p className="site-description">Welcome to our site! Here you can find useful information and perform many actions.</p>
       </div>
 
-      {/* Graph Section */}
       <div className="graph-container">
         <h2>Monthly Expenses</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
+          <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
@@ -135,7 +159,6 @@ function Home() {
         </ResponsiveContainer>
       </div>
 
-      {/* Expense Table Section */}
       <div className="table-container">
         <h2>Expenses</h2>
         <table className="expense-table">
@@ -159,9 +182,9 @@ function Home() {
           </tbody>
         </table>
 
-        <h1>your current budget is {budget}</h1>
-        {budget>0?<h2>great job</h2>:<h2>you need to save money</h2>}
-        {/* Form for adding new expense */}
+        {budget>0? <h1>Your current budget is {budget}</h1>:<h1  style={{backgroundColor:"red"}}> your current budget is {budget}</h1>}
+        {budget > 0 ? <h2>Great job!</h2> : <h2>You need to save money.</h2>}
+
         <div className="expense-form">
           <h3>Add a New Expense</h3>
           <input
@@ -186,7 +209,7 @@ function Home() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-             lang="en"
+            lang="en"
           />
           <button onClick={addExpense}>Add Expense</button>
         </div>

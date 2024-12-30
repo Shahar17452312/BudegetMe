@@ -12,7 +12,7 @@ function About() {
       </p>
       <div className="about-info">
         <h2>Our Mission</h2>
-        <p>
+        <p>   
           Our mission is to create intuitive, high-quality software that meets the unique needs of every user. 
           With cutting-edge technology and a dedicated team, we are here to bring your ideas to life.
         </p>

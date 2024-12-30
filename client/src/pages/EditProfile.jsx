@@ -3,48 +3,79 @@ import '../assets/styles/profile.css'; // קובץ עיצוב
 import axios from 'axios';
 import HamburgerMenu from '../components/HamburgerMenu.jsx';
 
-
 function EditProfile() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [budget, setBudget] = useState('');
+  const id = localStorage.getItem("user_id");
+  const token = localStorage.getItem("accesstoken");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // כאן תוכל להוסיף את הלוגיקה לשמירת השינויים
-    alert('Profile updated!');
+
+    console.log("this is id " + id);
+
+    const date_of_creation = new Date();
+
+    try {
+      axios.put("http://localhost:8080/user/" + id, {
+        name,
+        email,
+        password,
+        budget,
+        date_of_creation
+      }, {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+
+      alert('Profile updated!');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  useEffect(()=>{
+  const handleDeleteUser = () => {
+    console.log(id);
 
-    const id=localStorage.getItem("id");
-    console.log("the id is "+id);
-    const token=sessionStorage.getItem("token");
-    
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      try {
+        axios.delete("http://localhost:8080/user/" + id, {
+          headers: {
+            "Authorization": "Bearer " + token
+          }
+        });
 
-    try{
-      axios.get("http://localhost:8080/user/"+id,{
+        alert('Account deleted successfully!');
+        localStorage.clear(); // לנקות נתונים מקומיים
+        window.location.href = '/'; // להפנות לדף הבית או לדף אחר
+      } catch (error) {
+        console.log(error);
+        alert('Failed to delete account. Please try again.');
+      }
+    }
+  };
 
+  useEffect(() => {
+    const id = localStorage.getItem("id");
+    console.log("the id is " + id);
+
+    try {
+      axios.get("http://localhost:8080/user/" + id, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-  
-      }).then((result)=>{
+      }).then((result) => {
         setName(result.data.name);
         setEmail(result.data.email);
         setBudget(result.data.amount);
       });
-    }
-    catch(error){
+    } catch (error) {
       console.log(error.message);
-
     }
-
-  
-    
-
-  },[]);
+  }, []);
 
   return (
     <div className="edit-profile-container">
@@ -90,9 +121,11 @@ function EditProfile() {
             onChange={(e) => setBudget(e.target.value)}
             placeholder="Enter your budget"
           />
-
         </div>
         <button type="submit" className="submit-btn">Save Changes</button>
+        <button type="button" className="delete-btn" onClick={handleDeleteUser} style={{ backgroundColor: 'red', color: 'white', marginTop: '10px' }}>
+          Delete Account
+        </button>
       </form>
     </div>
   );
