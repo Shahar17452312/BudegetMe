@@ -13,10 +13,15 @@ const registerController = async (req, res) => {
     }
 
     try {
-        const answer = await db.query("SELECT 1 FROM users WHERE name=$1 OR email=$2", [name, email]);
+        console.log(name +" "+ email);
+        const answer = await db.query("SELECT name,email FROM users WHERE name=$1 OR email=$2", [name, email]);
+        console.log("this is what rows has: "+answer.rows);
+        console.log('Database query result:', answer); // הוספת לוג
+        console.log(answer.rows);
         if (answer.rows.length > 0) {
             return res.status(400).json({ message: "user is already registered" });
         }
+        console.log("after check of rows");
         const hash = await bcrypt.hash(password, 10);
         const data = await db.query("INSERT INTO users (name,email,password,date_of_creation) VALUES ($1,$2,$3,$4) RETURNING id"
             , [name, email, hash, date_of_creation]);
@@ -50,7 +55,8 @@ const loginController = async (req, res) => {
 
     try {
         const data = await db.query("SELECT id,name,password,email,date_of_creation FROM users WHERE name=$1", [name]);
-        if (data.rows.length == 0) {
+        console.log(data.rows.length);
+        if (data.rows.length === 0) {
             return res.status(400).json({ message: "user not found" });
 
         }
@@ -63,7 +69,7 @@ const loginController = async (req, res) => {
         const accessToken = jwt.sign({ id: data.rows[0].id, name: name }, process.env.ACCESS_TOKEN_SECRET_KEY, { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_TIME });
         const refreshToken = jwt.sign({ id: data.rows[0].id, name: name }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_TIME });
         res.status(202).json({
-            message: "loged in",
+            message: "Loged in",
             name: name,
             email: email,
             date_of_creation: date_of_creation,
