@@ -31,17 +31,18 @@ app.use("/auth",authRouter);
 
 
 
-
-app.listen(port,async()=>{
-    try{
-        await dbConnecting();
-        console.log("Listening on port "+port);
-    }
-    catch(error){
-        console.log("error to connect server");
-        process.exit(1);
-    }
-});
+if(process.env.TEST_MODE==="yes"){
+    app.listen(port,async()=>{
+        try{
+            await dbConnecting();
+            console.log("Listening on port "+port);
+        }
+        catch(error){
+            console.log("error to connect server");
+            process.exit(1);
+        }
+    });
+}
 
 
 export default app;

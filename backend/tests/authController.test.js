@@ -186,7 +186,6 @@ describe("Login",()=>{
 
 
   it("try login with wrong name user in DB ",async()=>{
-    console.log("the wrong name");
     db.query.mockResolvedValueOnce({
       rows:[]
     });
