@@ -7,13 +7,13 @@ const getUser = async (req, res) => {
     try {
         const check = verify(header, req.params.id);
         if (check.status !== 200) {
-            return res.status(check.status).json({ message: check.message });
+            return res.status(400).json({ message: check.message });
         }
 
         const { id } = check.payload;
 
         const data = await db.query("SELECT name,email,date_of_creation FROM users WHERE id=$1", [id]);
-        if (data.rows.length == 0) {
+        if (data.rows.length === 0) {
             return res.status(404).json({ message: "there is no such user" });
         }
         return res.status(200).json({ ...data.rows[0] });
