@@ -55,7 +55,6 @@ describe("checking get budget",()=>{
 
 
     it("should be 404 cause there is no data",async()=>{
-        token;
         db.query.mockResolvedValueOnce({
             rows:[]
         });
@@ -71,8 +70,98 @@ describe("checking get budget",()=>{
         db.query.mockRejectedValueOnce(new Error('Database query failed'));
         const response=await request(app).get("/budget/1").set("Authorization","Bearer "+token);
 
-        expect(response.status).toBe(500);
         expect(response.body.message).toBe("Error during get budget amount");
 
+        expect(response.status).toBe(500);
+
     })
+});
+
+
+describe("check postBudget request",()=>{
+    it("should be 202 with message of create a budget",async()=>{
+
+        const response=await request(app).post("/budget/1").send({amount:200}).set("Authorization","Bearer "+token);
+        
+        expect(response.body.message).toBe("Budget added to user");
+
+        expect(response.status).toBe(202);
+    });
+
+
+    it("should be 400 cause there is no amount in the body request",async()=>{
+        const response=await request(app).post("/budget/1").set("Authorization","Bearer "+token);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Missing request body");
+    });
+
+
+    it("should be 400 cause amount in the body request is not a number",async()=>{
+        const response=await request(app).post("/budget/1").send({amount:"200"}).set("Authorization","Bearer "+token);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Budget must be a valid positive number");
+    })
+
+    it("should be 400 cause token is invalid",async()=>{
+        const response=await request(app).post("/budget/1").send({amount:200}).set("Authorization","Bearer 123");
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Invalid token");
+    });
+
+
+    it("should be 500 cause server error",async()=>{
+
+        db.query.mockRejectedValueOnce(new Error("Database query failed"));
+        const response=await request(app).post("/budget/1").send({amount:200}).set("Authorization","Bearer "+token);
+
+
+        expect(response.body.message).toBe("Error during update budget");
+
+    });
+});
+
+
+
+describe("check deleteBudget request ",()=>{
+    it("should be 200 with",async()=>{
+        db.query.mockResolvedValueOnce({
+            rows:[{id:1
+                ,amount:200}
+            ]
+        });
+
+        const response= await request(app).delete("/budget/1").set("Authorization","Bearer "+token);
+
+
+        expect(response.status).toBe(200);
+
+
+    });
+
+
+    it("should be 400 cause token is invlid",async()=>{
+     
+        const response= await request(app).delete("/budget/1").set("Authorization","Bearer 123");
+
+
+        expect(response.status).toBe(400);
+
+
+    });
+
+    
+    it("should be 500 with cause server error",async()=>{
+     
+        db.query.mockRejectedValueOnce(new Error("Database query failed"))
+        const response= await request(app).delete("/budget/1").set("Authorization","Bearer "+token);
+
+
+        expect(response.status).toBe(500);
+        expect(response.body.message).toBe("Error during delete budget");
+
+
+    });
 })

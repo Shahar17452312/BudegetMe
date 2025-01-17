@@ -1,3 +1,3 @@
 export default {
-  presets: ["@babel/preset-env", "@babel/preset-modules"],
+  presets: ["@babel/preset-env"],
 };

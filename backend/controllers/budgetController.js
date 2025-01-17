@@ -45,23 +45,24 @@ const postBudget = async (req, res) => {
         }
         const check = verify(header, req.params.id);
         if (check.status !== 200) {
-            return res.status(check.status).json({ message: check.message });
+            return res.status(400).json({ message: check.message });
         }
 
         const { id } = check.payload;
 
         await db.query("INSERT INTO budgets (user_id,amount) VALUES ($1,$2)", [id, amount]);
 
-        res.status(202).json({ message: "Budget added to user" });
+        return res.status(202).json({ message: "Budget added to user" });
     }
     catch (error) {
-        console.log(error.message);
+        console.log("The error message: "+error.message);
 
         if (process.env.NODE_ENV === "development") {
             return res.status(500).json({ message: error.message, stack: error.stack });
-        } else {
-            return res.status(500).json({ message: "Error during update budget" });
         }
+
+        return res.status(500).json({ message: "Error during update budget" });
+        
     }
 };
 
@@ -71,11 +72,11 @@ const deleteBudget = async (req, res) => {
     try {
         const check = verify(header, req.params.id);
         if (check.status !== 200) {
-            return res.status(check.status).json({ message: check.message })
+            return res.status(400).json({ message: check.message })
         }
         const { id } = check.payload;
         await db.query("DELETE FROM budgets WHERE user_id=$1", [id]);
-        res.status(200).json({ message: "budget deleted" });
+        return res.status(200).json({ message: "budget deleted" });
 
     }
     catch (error) {
