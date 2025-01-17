@@ -36,7 +36,7 @@ const postExpense=async(req,res)=>{
     const header=req.headers;
     const check=verify(header,req.params.id);
     if(check.status!==200){
-       return res.status(check.status).json({message:check.message});
+       return res.status(400).json({message:check.message});
     }
 
     const {id}=check.payload;

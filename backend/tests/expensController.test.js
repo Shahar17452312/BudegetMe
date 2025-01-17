@@ -89,8 +89,66 @@ describe("check getAllExpenses request",()=>{
         expect(response.status).toBe(500);
         expect(response.body.message).toBe("Database query failed");
     });
-    
-    
+
+});
 
 
+describe("check postExpense request",()=>{
+    it("should return 200 ",async()=>{
+        
+        db.query.mockResolvedValueOnce({
+            rows:[]
+        });
+
+        const response=await request(app).post("/expense/1").send({
+                amount:100
+                ,date_of_expense:formattedTimestampDateOfExpense,
+                category:"food",
+                description:"ate food",
+                date_of_creation:formattedTimestampDateOfCreation
+        }).set("Authorization","Bearer "+token); 
+        
+        expect(response.status).toBe(200);
+    });
+
+    it("should return 400 cause: invalid token ",async()=>{
+        const response=await request(app).post("/expense/1").set("Authorization","Bearer 123"); 
+        
+        expect(response.status).toBe(400);
+    });
+
+    it("should return 400 cause: missing fields in body request",async()=>{
+        
+    
+        const response=await request(app).post("/expense/1").send({
+                date_of_expense:formattedTimestampDateOfExpense,
+                category:"food",
+                description:"ate food",
+                date_of_creation:formattedTimestampDateOfCreation
+        }).set("Authorization","Bearer "+token); 
+        
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("there is missing fields in request");
+    });
+
+
+    it("should return 500 : server error  ",async()=>{
+        
+        db.query.mockRejectedValueOnce(new Error("Database query failed"));
+
+        const response=await request(app).post("/expense/1").send({
+                amount:100
+                ,date_of_expense:formattedTimestampDateOfExpense,
+                category:"food",
+                description:"ate food",
+                date_of_creation:formattedTimestampDateOfCreation
+        }).set("Authorization","Bearer "+token); 
+        
+        expect(response.status).toBe(500);
+        expect(response.body.message).toBe("Database query failed");
+    });
+
+    
 })
+
+
