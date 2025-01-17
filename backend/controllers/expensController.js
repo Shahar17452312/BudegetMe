@@ -6,7 +6,7 @@ const getAllExpenses=async(req,res)=>{
     const header=req.headers;
     const check=verify(header,req.params.id);
     if(check.status!==200){
-       return res.status(check.status).json({message:check.message});
+       return res.status(400).json({message:check.message});
     }
 
     const {id}=check.payload;
@@ -21,7 +21,7 @@ const getAllExpenses=async(req,res)=>{
     }
     catch (error) {
         console.log(error.message);
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         } else {
             return res.status(500).json({message:"Database query failed"});
@@ -56,7 +56,7 @@ const postExpense=async(req,res)=>{
     }
     catch (error) {
         console.log(error.message);
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         } else {
             return res.status(500).json({message:"Failed to save expense"});

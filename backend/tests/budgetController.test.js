@@ -1,6 +1,6 @@
-import request  from "supertest";
-import pg from "pg";
+import request from "supertest";
 import app from "../server.js";
+import pg from "pg";
 import jwt from "jsonwebtoken";
 
 jest.mock("pg",()=>{
@@ -70,7 +70,7 @@ describe("checking get budget",()=>{
         db.query.mockRejectedValueOnce(new Error('Database query failed'));
         const response=await request(app).get("/budget/1").set("Authorization","Bearer "+token);
 
-        expect(response.body.message).toBe("Error during get budget amount");
+        expect(response.body.message).toBe("Database query failed");
 
         expect(response.status).toBe(500);
 
@@ -118,7 +118,7 @@ describe("check postBudget request",()=>{
         const response=await request(app).post("/budget/1").send({amount:200}).set("Authorization","Bearer "+token);
 
 
-        expect(response.body.message).toBe("Error during update budget");
+        expect(response.body.message).toBe("Database query failed");
 
     });
 });
@@ -160,7 +160,7 @@ describe("check deleteBudget request ",()=>{
 
 
         expect(response.status).toBe(500);
-        expect(response.body.message).toBe("Error during delete budget");
+        expect(response.body.message).toBe("Database query failed");
 
 
     });

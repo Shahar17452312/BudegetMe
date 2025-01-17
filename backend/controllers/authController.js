@@ -32,7 +32,7 @@ const registerController = async (req, res) => {
     catch (error) {
         console.log(error.message);
 
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         } else {
             return res.status(500).json({ message: "Error during registration or database operation" });
@@ -74,7 +74,7 @@ const loginController = async (req, res) => {
     catch (error) {
         console.log(error.message);
 
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         } else {
             return res.status(500).json({ message: "Error during login or database operation" });

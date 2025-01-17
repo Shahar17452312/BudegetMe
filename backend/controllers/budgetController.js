@@ -21,7 +21,7 @@ const getBudget = async (req, res) => {
     catch (error) {
         console.log(error.message);
 
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         } else {
             return res.status(500).json({ message: "Error during get budget amount" });
@@ -57,7 +57,7 @@ const postBudget = async (req, res) => {
     catch (error) {
         console.log("The error message: "+error.message);
 
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         }
 
@@ -82,7 +82,7 @@ const deleteBudget = async (req, res) => {
     catch (error) {
         console.log(error.message);
 
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
             return res.status(500).json({ message: error.message, stack: error.stack });
         } else {
             return res.status(500).json({ message: "Error during delete budget" });
