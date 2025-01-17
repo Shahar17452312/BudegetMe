@@ -38,7 +38,7 @@ const postUser = async (req, res) => {
     try {
         const check = verify(header, req.params.id);
         if (check.status !== 200) {
-            return res.status(check.status).json({ message: check.message });
+            return res.status(400).json({ message: check.message });
         }
         const { id } = check.payload;
         const { name, email, password } = req.body;
@@ -71,7 +71,7 @@ const deleteUser = async (req, res) => {
     try {
         const check = verify(header, req.params.id);
         if (check.status !== 200) {
-           return res.status(check.status).json({ message: check.message });
+           return res.status(400).json({ message: check.message });
         }
         const { id } = check.payload;
         await db.query("DELETE FROM users WHERE id=$1", [id]);
