@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 
 const registerController = async (req, res) => {
     const { name, email, password, date_of_creation } = req.body;
+    console.log(req.body);
 
     if (!name || !email || !password || !date_of_creation) {
         return res.status(400).json({ message: "Missing fields" });
@@ -24,6 +25,7 @@ const registerController = async (req, res) => {
         const refreshToken = jwt.sign({ id: data.rows[0].id, name: name }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_TIME });
         return res.status(200).json({
             message: "created",
+            id:data.rows[0].id,
             accessToken: accessToken,
             refreshToken: refreshToken
         });

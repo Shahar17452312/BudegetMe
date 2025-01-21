@@ -1,13 +1,17 @@
 import { useState } from "react";
 import Input from "../components/Input.jsx"; // נניח שיש לך קומפוננטת Input
 import "../../public/styles/Register.css"; // קובץ CSS עם עיצוב מתאים
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Register() {
+    const navigate=useNavigate();
+    const [flag, setFlag]=useState(true);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    budget: "",
+    budget: ""
   });
 
   const handleChange = (e) => {
@@ -18,10 +22,61 @@ function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // כאן תוכל להוסיף את הלוגיקה לשליחת הנתונים לשרת
     console.log(formData);
+    try{
+        const authResponse= await axios.post("http://localhost:3000/auth/register",{
+            name:formData.username,
+            email:formData.email,
+            password:formData.password,
+            date_of_creation:new Date().toISOString()
+        });
+
+
+
+
+        if(authResponse.status!=200){
+            setFlag(false);
+        }
+        else{
+            sessionStorage.setItem("accessToken",authResponse.data.accessToken);
+            sessionStorage.setItem("refreshToken",authResponse.data.refreshToken);
+        }
+
+       try{
+        const budgetResponse=await axios.post("http://localhost:3000/budget/"+authResponse.data.id,{
+            amount:Number(formData.budget)
+        },
+        {
+            headers: {
+                Authorization: "Bearer "+authResponse.data.accessToken 
+              }
+        });
+        if(budgetResponse.status!=200){
+            setFlag(false);
+        }
+
+        navigate("/home");
+       }
+       catch(error){
+        console.log(error);
+        setFlag(false);
+
+       }
+        
+
+
+    }
+    catch(error){
+        
+        console.log(error);
+        setFlag(false);
+
+    }
+
+  
+    
   };
 
   return (
@@ -64,6 +119,7 @@ function Register() {
           Register
         </button>
       </form>
+      <h2 hidden={flag}>error to register</h2>
     </div>
   );
 }

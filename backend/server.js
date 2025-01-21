@@ -4,6 +4,7 @@ import userRouter from "./routes/userRouter.js";
 import expensRouter from "./routes/expenseRouter.js";
 import budgerRouter from "./routes/budgetRouter.js";
 import authRouter from "./routes/authRouter.js";
+import cors from "cors";
 
 const app=express();
 const port=process.env.SERVER_PORT;
@@ -15,6 +16,9 @@ async function dbConnecting(){
   
 }
 
+app.use(cors({
+    origin: "http://localhost:5173"
+  }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +35,7 @@ app.use("/auth",authRouter);
 
 
 
-if(process.env.TEST_MODE==="yes"){
+if(!(process.env.TEST_MODE==="yes")){
     app.listen(port,async()=>{
         try{
             await dbConnecting();
