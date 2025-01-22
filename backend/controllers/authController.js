@@ -66,6 +66,7 @@ const loginController = async (req, res) => {
         const refreshToken = jwt.sign({ id: data.rows[0].id, name: name }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_TIME });
         res.status(202).json({
             message: "Loged in",
+            id:data.rows[0].id,
             name: name,
             email: email,
             date_of_creation: date_of_creation,

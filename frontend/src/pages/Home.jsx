@@ -21,6 +21,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import "../../public/styles/Home.css"
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -29,6 +30,7 @@ function Home() {
     const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
     const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] =useState(null);
+  const navigate=useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -37,7 +39,8 @@ function Home() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (event) => {
+    navigate("/"+event.target.innerText.toLowerCase().replace(/\s+/g, "-"));
     setAnchorElNav(null);
   };
 
@@ -104,7 +107,7 @@ const dataset = [
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem data-name={page} key={page} onClick={handleCloseNavMenu}>
                   <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
                 </MenuItem>
               ))}
@@ -173,25 +176,25 @@ const dataset = [
       </Container>
     </AppBar>
         <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <h1>Seoul Rainfall (2023)</h1>
-        <BarChart
-            width={600}
-            height={400}
-            data={dataset}
-            margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-            }}
-        >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="seoul" fill="#8884d8" name="Rainfall" />
-        </BarChart>
+            <h1>Seoul Rainfall (2023)</h1>
+            <BarChart
+                width={600}
+                height={400}
+                data={dataset}
+                margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+                }}
+            >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="seoul" fill="#8884d8" name="Rainfall" />
+            </BarChart>
         </div>
   </div>
     
