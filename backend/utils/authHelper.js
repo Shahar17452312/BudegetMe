@@ -13,7 +13,7 @@ const verify=(header,paramsId)=>{
         try{
             const data=jwt.verify(token,process.env.ACCESS_TOKEN_SECRET_KEY);
             if(data.id!==Number(paramsId)){
-                return {status:400,message:"user id not matched to paramsId "};
+                return {status:401,message:"user id not matched to paramsId "};
             }
             return {
                 status:200,

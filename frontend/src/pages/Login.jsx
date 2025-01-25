@@ -28,11 +28,7 @@ function Login() {
     useEffect(()=>{
         const token=localStorage.getItem("accessToken");
         if(token){
-            const userData={
-                id:localStorage.getItem("id"),
-                name:localStorage.getItem("name")
-            }
-            navigate("/home",{state:{userData:userData}});
+            navigate("/home");
 
         }
     },[])
@@ -56,7 +52,8 @@ function Login() {
             sessionStorage.setItem("accessToken",response.data.accessToken);
             sessionStorage.setItem("refreshToken",response.data.refreshToken);
 
-            navigate("/home",{state:response.data});
+            navigate("/home");
+         
 
         }
         catch(e){

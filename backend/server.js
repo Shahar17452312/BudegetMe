@@ -34,8 +34,7 @@ app.use("/auth",authRouter);
 
 
 
-
-if(!(process.env.TEST_MODE==="yes")){
+if(!(process.env.NODE_ENV==="test")){
     app.listen(port,async()=>{
         try{
             await dbConnecting();

@@ -6,7 +6,7 @@ const getAllExpenses=async(req,res)=>{
     const header=req.headers;
     const check=verify(header,req.params.id);
     if(check.status!==200){
-       return res.status(400).json({message:check.message});
+       return res.status(check.status).json({message:check.message});
     }
 
     const {id}=check.payload;
@@ -17,7 +17,7 @@ const getAllExpenses=async(req,res)=>{
             return res.status(404).json({message:"expenses not found"});
 
         }
-        return res.status(200).json({...data.rows[0]});
+        return res.status(200).json(data.rows);
     }
     catch (error) {
         console.log(error.message);
@@ -36,7 +36,7 @@ const postExpense=async(req,res)=>{
     const header=req.headers;
     const check=verify(header,req.params.id);
     if(check.status!==200){
-       return res.status(400).json({message:check.message});
+       return res.status(check.status).json({message:check.message});
     }
 
     const {id}=check.payload;

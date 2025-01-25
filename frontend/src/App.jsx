@@ -1,11 +1,11 @@
-import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Home from './pages/Home.jsx';
+import "./App.css"
+import EditProfile from './pages/EditProfile.jsx';
 
 function App() {
-  const token = sessionStorage.getItem("accessToken");
 
   return (
     <Router>
@@ -13,11 +13,17 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route 
           path="/home" 
-          element={token ? <Home /> : <Navigate to="/" />} 
+          element={<Home/>}
+        />
+
+        <Route
+          path="edit-profile"
+          element={<EditProfile/>}
+        
         />
         <Route 
           path="/" 
-          element={token ? <Navigate to="/home" /> : <Login />} 
+          element={<Login />} 
         />
       </Routes>
     </Router>

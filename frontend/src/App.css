@@ -1,10 +1,9 @@
-#root {
-    height: 100vh;
+body {
+    height: 100%;
     width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #6e7cfa, #2d87f0);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #fff;
+    
   }
+#root{
+    height: 100%;
+    width: 100vw;
+}
