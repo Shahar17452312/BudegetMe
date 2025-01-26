@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import AppBar from "@mui/material/AppBar";
@@ -21,8 +21,8 @@ function Home() {
   const pages = ["Home", "Edit profile"];
   const id = localStorage.getItem("id");
   const [rows, setRows] = useState([]);
-  var [accesstoken,SetAccesstoken]= useState(sessionStorage.getItem("accessToken"));
-  const refreshToken=sessionStorage.getItem("refreshToken");
+  const [accesstoken, SetAccesstoken] = useState(sessionStorage.getItem("accessToken"));
+  const refreshToken = sessionStorage.getItem("refreshToken");
   const [anchorElNav, setAnchorElNav] = useState(null);
   const navigate = useNavigate();
   const [newTransaction, setNewTransaction] = useState({
@@ -32,21 +32,8 @@ function Home() {
     amount: "",
   });
 
-  const [expensesByMonths,setExpensesByMonths] = useState(
-    [
-      { month: 1, expenses: 0 },
-      { month: 2, expenses: 0 },
-      { month: 3, expenses: 0 },
-      { month: 4, expenses: 0 },
-      { month: 5, expenses: 0 },
-      { month: 6, expenses: 0 },
-      { month: 7, expenses: 0 },
-      { month: 8, expenses: 0 },
-      { month: 9, expenses: 0 },
-      { month: 10, expenses: 0 },
-      { month: 11, expenses: 0 },
-      { month: 12 ,expenses: 0 }
-    ]
+  const [expensesByMonths, setExpensesByMonths] = useState(
+    Array(12).fill().map((_, i) => ({ month: i + 1, expenses: 0 }))
   );
 
   const handleOpenNavMenu = (event) => {
@@ -59,77 +46,61 @@ function Home() {
   };
 
   useEffect(() => {
-
-    const fetch=async()=>{
-      var response;
+    const fetch = async () => {
       try {
-       response= await axios.get("http://localhost:3000/expense/" + id, {
-            headers: {
-              Authorization: "Bearer " + accesstoken,
-            },
-          });
+        let response = await axios.get("http://localhost:3000/expense/" + id, {
+          headers: {
+            Authorization: "Bearer " + accesstoken,
+          },
+        });
 
-          var dataAfterDateEdit=response.data.map((expense)=>{
-            var date=expense.date_of_creation.slice(0,10);
-            return {
-              ...expense,
-              date_of_creation:date
-            }
-          });
-          dataAfterDateEdit.forEach((expense)=>{
-            const month=parseInt(expense.date_of_creation.slice(6,7));
-            setExpensesByMonths((prev)=>{
-              const newArray=[...prev];
-              newArray[month-1].expenses+=parseInt(expense.amount);
-              return newArray
-            })  
-            console.log(expense.amount)
-          })
-          setRows(dataAfterDateEdit);
-       
+        const dataAfterDateEdit = response.data.map((expense) => {
+          const date = expense.date_of_creation.slice(0, 10);
+          return { ...expense, date_of_creation: date };
+        });
 
-          console.log(expensesByMonths);
-            
+        dataAfterDateEdit.forEach((expense) => {
+          const month = parseInt(expense.date_of_creation.slice(5, 7));
+          setExpensesByMonths((prev) => {
+            const newArray = [...prev];
+            newArray[month - 1].expenses += parseInt(expense.amount);
+            return newArray;
+          });
+        });
+
+        setRows(dataAfterDateEdit);
       } catch (error) {
         console.log(error);
-        if(error.response.status===401){
-           try{
-              const newAccessToken=await axios.post("http://localhost:3000/auth/refresh-token",{
-                refreshToken:refreshToken
+        if (error.response.status === 401) {
+          try {
+            const newAccessToken = await axios.post("http://localhost:3000/auth/refresh-token", {
+              refreshToken: refreshToken,
+            });
+
+            sessionStorage.setItem("accessToken", newAccessToken.data.accessToken);
+            SetAccesstoken(sessionStorage.getItem("accessToken"));
+
+            try {
+              const response = await axios.get("http://localhost:3000/expense/" + id, {
+                headers: {
+                  Authorization: "Bearer " + accesstoken,
+                },
               });
-
-              console.log(newAccessToken);
-              sessionStorage.setItem("accessToken",newAccessToken.data.accessToken);
-              SetAccesstoken(sessionStorage.getItem("accessTokn"));
-
-              try{
-                response= await axios.get("http://localhost:3000/expense/" + id, {
-                  headers: {
-                    Authorization: "Bearer " + accesstoken,
-                  },
-                });
-                  if (response.status === 200) {
-                    console.log( response.data);
-                    setRows(response.data);
-                  }
+              if (response.status === 200) {
+                setRows(response.data);
               }
-              catch(e){
-                console.log(e.message);
-              }
-           }
-           
-           catch(e){
+            } catch (e) {
+              console.log(e.message);
+            }
+          } catch (e) {
             console.log(e.message);
-           }
-
+          }
         }
-
       }
-    }
+    };
 
     fetch();
-    
-  },[]);
+  }, [accesstoken, id, refreshToken]);
 
   const handleInputChange = (e) => {
     setNewTransaction({
@@ -139,31 +110,29 @@ function Home() {
   };
 
   const handleAddTransaction = () => {
-    // שליחה לשרת להוסיף את ההוצאה
     axios
-      .post(
-        "http://localhost:3000/expense/"+id,
-        newTransaction,
-        {
-          headers: {
-            Authorization: "Bearer " + accesstoken,
-          },
-        }
-      )
+      .post("http://localhost:3000/expense/" + id, newTransaction, {
+        headers: {
+          Authorization: "Bearer " + accesstoken,
+        },
+      })
       .then((response) => {
         if (response.status === 200) {
-          console.log(rows);
           setRows([...rows, newTransaction]);
-          setNewTransaction({ date_of_creation: "", category: "", description: "", amount: "" }); // ניקוי השדות
+          const month = parseInt(newTransaction.date_of_creation.slice(5, 7));
+          setExpensesByMonths((prev) => {
+            const newArray = [...prev];
+            newArray[month - 1].expenses += parseInt(newTransaction.amount);
+            return newArray;
+          });
+          setNewTransaction({ date_of_creation: "", category: "", description: "", amount: "" });
+          
         }
       })
       .catch((error) => {
         console.error("Error adding transaction:", error);
       });
   };
-
- 
-
 
   return (
     <div className="home-container" style={{ backgroundColor: "#e0f7fa" }}>
@@ -243,11 +212,7 @@ function Home() {
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}
-                >
+                <Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: "white", display: "block" }}>
                   {page}
                 </Button>
               ))}
@@ -262,7 +227,7 @@ function Home() {
       </AppBar>
 
       <div style={{ textAlign: "center", marginTop: "150px" }}>
-        <h1>expneses by month ({new Date().getFullYear()})</h1>
+        <h1>Expenses by month ({new Date().getFullYear()})</h1>
         <BarChart
           width={600}
           height={400}
@@ -305,13 +270,12 @@ function Home() {
           </Table>
         </TableContainer>
 
-        {/* Form to add a new transaction */}
         <div style={{ marginTop: "30px" }}>
           <h3>Add Transaction</h3>
           <input
             type="date"
             name="date_of_creation"
-            value={newTransaction.date}
+            value={newTransaction.date_of_creation}
             onChange={handleInputChange}
           />
           <input
@@ -331,7 +295,7 @@ function Home() {
           <input
             type="number"
             name="amount"
-            value={newTransaction.money}
+            value={newTransaction.amount}
             onChange={handleInputChange}
             placeholder="Money"
           />

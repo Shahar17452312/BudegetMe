@@ -44,6 +44,7 @@ const postExpense=async(req,res)=>{
 
     const {amount,category,description,date_of_creation}=req.body;
     if(!amount||!category||!description||!date_of_creation){
+        console.log(amount);
         return  res.status(400).json({message:"there is missing fields in request"});
     }
 
